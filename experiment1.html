@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Experiment to compare Marking and Radial menus</title>
+
+	<!-- Marking Menu Stylesheet -->
+   <link href="./css/external/marking-menu.css" rel="stylesheet">
+	<!-- Fonts -->
+	<link href='https://fonts.googleapis.com/css?family=Stint+Ultra+Condensed' rel='stylesheet' type='text/css'>
+	<!-- Experiment Stylesheet -->
+  <link href="./css/experiment.css" rel="stylesheet">
+  <link rel="stylesheet" href="./css/my-experiment.css">
+
+
+  </head>
+  <body onload="initExperiment(1)" >
+
+    <div class="pre-experiment">
+      <div class="pre-survey">
+        <h2>Pre-survey</h2>
+        <form id="consent-form" class="form">
+          <div class="form-row">
+            <label for="">1. Name</label>
+            <input type="text" name="name">
+          </div>
+
+          <div class="form-row">
+            <label for="">2. Age</label>
+            <input type="text" name="age">
+          </div>
+
+          <div class="form-row">
+            <label for="">3. Occupation</label>
+            <input type="text" name="occupation">
+          </div>
+
+          <div class="form-row">
+            <label for="">4. How often do you use computer?</label><br />
+            <input type="radio" name="frequency" value="Everyday"> Everyday
+            <input type="radio" name="frequency" value="Every other day"> Every other day
+            <input type="radio" name="frequency" value="A few times a week"> A few times a week
+            <input type="radio" name="frequency" value="A few times a month"> A few times a month
+            <input type="radio" name="frequency" value="A few times a year"> A few times a year
+          </div>
+          <input type="Submit" value="Submit">
+        </form>
+      </div>
+
+    </div>
+
+  <!-- State Div -->
+  <div class="main-experiment">
+        <div class="instructions">
+          <h2>Instructions</h2>
+          <p>You will be given 18 tasks to complete for 3 rounds, which amounts to a total of 54 trials.</p>
+
+          <h3>Task</h3>
+          <p>Select the item specified under the column
+            <strong>Please select</strong>.
+            <p>Click the <strong>Next</strong> button after you have made your selection</p>
+          </p>
+
+          <h3>Two types of menu</h3>
+          <strong>1. Marking Menu</strong>
+          <p>Hold the right mouse button to reveal the menu and move the cursor to the item. You may make a selection without waiting
+          for the menu to appear.</p>
+
+          <strong>2. Radial Menu</strong>
+          <p>Click the right mouse button to reveal the menu, and click left mouse button to select the item.</p>
+
+          <h3>After each round</h3>
+          <p>Take a break of 30 seconds after each of the 3 rounds</p>
+        </div>
+
+        <div class="div">
+          <div class="post-survey">
+            <h2>Post survey</h2>
+
+            <form id="post-survey-form" class="form">
+              <div class="form-row">
+                <label for="">1. The test is simple:</label><br>
+                <input type="radio" name="ease" value="Strongly Agree"> Strongly Agree
+                <input type="radio" name="ease" value="Agree"> Agree
+                <input type="radio" name="ease" value="Neutral"> Neutral
+                <input type="radio" name="ease" value="Disagree"> Disagree
+                <input type="radio" name="ease" value="Strongly Disagree"> Strongly Disagree
+              </div>
+            
+              <div class="form-row">
+                <label for="">2. Instructions provided were clear</label><br>
+                <input type="radio" name="clear" value="Strongly Agree"> Strongly Agree
+                <input type="radio" name="clear" value="Agree"> Agree
+                <input type="radio" name="clear" value="Neutral"> Neutral
+                <input type="radio" name="clear" value="Disagree"> Disagree
+                <input type="radio" name="clear" value="Strongly Disagree"> Strongly Disagree
+              </div>
+
+              <div class="form-row">
+                <label for="">3. Which technique did you like better?</label><br>
+                <input type="radio" name="preference" value="Marking menu"> Marking Menu
+                <input type="radio" name="preference" value="Radial menu"> Radial Menu
+              </div>
+
+              <div class="form-row">
+                <label for="">4. Did you encounter any difficulties?</label><br>
+                <textarea name="difficulties" cols="80" rows="10"></textarea>
+              </div>
+
+              <div class="form-row">
+                <label for="">5. Any other comments?</label><br>
+                <textarea name="comments" cols="80" rows="10"></textarea>
+              </div>
+
+              <input type="Submit" value="Submit">
+            </form>
+            
+          </div>
+        </div>
+
+        <div class="row" id="state-container">
+          <div class="cellstate">
+            <span class="label label-primary">Round</span>
+            <span class="label label-default" id="roundNumber">&nbsp;</span>
+          </div>
+          <div class="cellstate">
+            <span class="label label-primary">Trial</span>
+            <span class="label label-default" id="trialNumber">&nbsp;</span>
+          </div>
+          <div class="cellstate">
+            <span class="label label-primary">Menu Type</span>
+            <span class="label label-default" id="menuType">&nbsp;</span>
+          </div>
+          <div class="cellstate">
+            <span class="label label-primary">Menu breadth</span>
+            <span class="label label-default" id="menuBreadth">&nbsp;</span>
+          </div>
+          <div class="cellstate">
+            <span class="label label-primary">Menu Depth</span>
+            <span class="label label-default" id="menuDepth">&nbsp;</span>
+          </div> 
+          <div class="cellstimulusresponse">
+            <span class="label label-primary">Please select</span>
+            <span class="label label-default" id="targetItem">&nbsp;</span>
+          </div>
+          <div class="cellstimulusresponse">
+            <span class="label label-primary">Item selected</span>
+            <span class="label label-default" id="selectedItem">&nbsp;</span>
+          </div>
+          <div class="cellnext">
+            <button id="nextButton" type="button" class="btn btn-block btn-primary btn-lg" onclick="loadNextTrial(event)">Next</button>
+          </div>
+        </div>
+        
+        <!--  Interaction Div-->
+        
+        <div class="row" id="interaction-container">
+        </div>
+  </div>
+
+
+  </body>
+    
+    
+    <!-- Marking Menu Scripts -->
+    <script src="./js/external/jquery-3.3.1.min.js"></script>
+    <script src="./js/external/rxjs.umd.js"></script>
+  	<script src="./js/external/marking-menu.js"></script>
+    
+    <!-- Radial Menu Scripts -->
+    <script src="./js/external/d3.min.js" ></script>
+    <script src="./js/external/es6-promise.auto.min.js"></script>
+    <script src="./js/external/sunburst-menu.js"></script>
+    
+    <!-- Experiment Scripts -->
+    <script src="./js/experiment-tracker.js"></script>
+    <script src="./js/experiment.js"></script>
+
+</html>

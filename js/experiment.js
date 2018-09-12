@@ -2,22 +2,43 @@
 
 // Location of data files
 const trialsFile = "./data/experiments.csv"
-const menuL1File = "./data/menu_depth_1.csv"
-const menuL2File = "./data/menu_depth_2.csv"
-const menuL3File = "./data/menu_depth_3.csv"
+
+const menuL1B2File = "./data/menu_depth_1_breadth_2.csv"
+const menuL2B2File = "./data/menu_depth_2_breadth_2.csv"
+const menuL3B2File = "./data/menu_depth_3_breadth_2.csv"
+const menuL1B4File = "./data/menu_depth_1_breadth_4.csv"
+const menuL2B4File = "./data/menu_depth_2_breadth_4.csv"
+const menuL3B4File = "./data/menu_depth_3_breadth_4.csv"
+const menuL1B6File = "./data/menu_depth_1_breadth_6.csv"
+const menuL2B6File = "./data/menu_depth_2_breadth_6.csv"
+const menuL3B6File = "./data/menu_depth_3_breadth_6.csv"
 
 // Global variables
 var menu;
 var trialsData = [];
 var numTrials = 0;
 var currentTrial = 1;
-var markingMenuL1 = [];
-var markingMenuL2 = [];
-var markingMenuL3 = [];
+var round = 1;
+var markingMenuL1B2 = [];
+var markingMenuL2B2 = [];
+var markingMenuL3B2 = [];
+var markingMenuL1B4 = [];
+var markingMenuL2B4 = [];
+var markingMenuL3B4 = [];
+var markingMenuL1B6 = [];
+var markingMenuL2B6 = [];
+var markingMenuL3B6 = [];
 var radialMenuTree = null;
-var radialMenuL1 = [];
-var radialMenuL2 = [];
-var radialMenuL3 = [];
+var radialMenuL1B2 = [];
+var radialMenuL2B2 = [];
+var radialMenuL3B2 = [];
+var radialMenuL1B4 = [];
+var radialMenuL2B4 = [];
+var radialMenuL3B4 = [];
+var radialMenuL1B6 = [];
+var radialMenuL2B6 = [];
+var radialMenuL3B6 = [];
+
 var tracker = new ExperimentTracker();
 var markingMenuSubscription = null;
 var radialMenuSvg = null;
@@ -34,9 +55,39 @@ function getData(relativePath) {
 	return xmlHttp.responseText;
 }
 
+document.getElementById('consent-form').addEventListener('submit', onPreSurvey);
+document.getElementById('post-survey-form').addEventListener('submit', onPostSurvey);
+
+$('.main-experiment').hide();
+$('.post-survey').hide();
+
+function onPreSurvey(e) {
+	e.preventDefault();
+	tracker.name = e.target.name.value;
+	tracker.age = e.target.age.value;
+	tracker.occupation = e.target.occupation.value;
+	tracker.frequency = e.target.frequency.value;
+
+	$('.pre-survey').hide();
+	$('.main-experiment').show();
+}
+
+function onPostSurvey(e) {
+	e.preventDefault();
+	tracker.ease = e.target.ease.value;
+	tracker.clear = e.target.clear.value;
+	tracker.preference = e.target.preference.value;
+	tracker.difficulties = e.target.difficulties.value;
+	tracker.comments = e.target.comments.value;
+
+	tracker.toCsv();
+}
+
 
 // Loads the CSV data files on page load and store it to global variables
-function initExperiment() {
+function initExperiment(participantId) {
+	tracker.id = participantId;
+	tracker.round = round;
 
 	// Get Trails
 	var data = getData(trialsFile);
@@ -46,27 +97,48 @@ function initExperiment() {
 	for (var i = 1; i <= numTrials; i++) {
 		var cells = records[i].split(",");
 		var menuType = cells[0].trim();
-		var menuDepth = cells[1].trim();
-		var targetItem = cells[2].trim();
+		var menuBreadth = cells[1].trim();
+		var menuDepth = cells[2].trim();
+		var targetItem = cells[3].trim();
 		trialsData[i] = {
 			'Menu Type': menuType,
+			'Menu Breadth': menuBreadth,
 			'Menu Depth': menuDepth,
 			'Target Item': targetItem
 		};
 	}
 
 	// Get Menus
-	var menuL1Data = getData(menuL1File);
-	var menuL2Data = getData(menuL2File);
-	var menuL3Data = getData(menuL3File);
+	var menuL1B2Data = getData(menuL1B2File);
+	var menuL2B2Data = getData(menuL2B2File);
+	var menuL3B2Data = getData(menuL3B2File);
+	var menuL1B4Data = getData(menuL1B4File);
+	var menuL2B4Data = getData(menuL2B4File);
+	var menuL3B4Data = getData(menuL3B4File);
+	var menuL1B6Data = getData(menuL1B6File);
+	var menuL2B6Data = getData(menuL2B6File);
+	var menuL3B6Data = getData(menuL3B6File);
 	
 	// Format CSV Menu to respective Menu structures
-	markingMenuL1 = formatMarkingMenuData(menuL1Data);
-	markingMenuL2 = formatMarkingMenuData(menuL2Data);
-	markingMenuL3 = formatMarkingMenuData(menuL3Data);
-	radialMenuL1 = formatRadialMenuData(menuL1Data);
-	radialMenuL2 = formatRadialMenuData(menuL2Data);
-	radialMenuL3 = formatRadialMenuData(menuL3Data);
+	markingMenuL1B2 = formatMarkingMenuData(menuL1B2Data);
+	markingMenuL2B2 = formatMarkingMenuData(menuL2B2Data);
+	markingMenuL3B2 = formatMarkingMenuData(menuL3B2Data);
+	markingMenuL1B4 = formatMarkingMenuData(menuL1B4Data);
+	markingMenuL2B4 = formatMarkingMenuData(menuL2B4Data);
+	markingMenuL3B4 = formatMarkingMenuData(menuL3B4Data);
+	markingMenuL1B6 = formatMarkingMenuData(menuL1B6Data);
+	markingMenuL2B6 = formatMarkingMenuData(menuL2B6Data);
+	markingMenuL3B6 = formatMarkingMenuData(menuL3B6Data);
+
+	radialMenuL1B2 = formatRadialMenuData(menuL1B2Data);
+	radialMenuL2B2 = formatRadialMenuData(menuL2B2Data);
+	radialMenuL3B2 = formatRadialMenuData(menuL3B2Data);
+	radialMenuL1B4 = formatRadialMenuData(menuL1B4Data);
+	radialMenuL2B4 = formatRadialMenuData(menuL2B4Data);
+	radialMenuL3B4 = formatRadialMenuData(menuL3B4Data);
+	radialMenuL1B6 = formatRadialMenuData(menuL1B6Data);
+	radialMenuL2B6 = formatRadialMenuData(menuL2B6Data);
+	radialMenuL3B6 = formatRadialMenuData(menuL3B6Data);
 	
 	//Start the first trial
 	nextTrial();
@@ -74,6 +146,7 @@ function initExperiment() {
 
 // Wrapper around nextTrial() to prevent click events while loading menus
 function loadNextTrial(e){
+	tracker.startReactionTime();
 	e.preventDefault();
 	nextTrial();
 	
@@ -86,10 +159,13 @@ function nextTrial() {
 	if (currentTrial <= numTrials) {
 
 		var menuType = trialsData[currentTrial]['Menu Type'];
+		var menuBreadth = trialsData[currentTrial]['Menu Breadth'];
 		var menuDepth = trialsData[currentTrial]['Menu Depth'];
 		var targetItem = trialsData[currentTrial]['Target Item'];
 
 		document.getElementById("trialNumber").innerHTML = String(currentTrial) + "/" + String(numTrials);
+		document.getElementById("roundNumber").innerHTML = round;
+		document.getElementById('menuBreadth').innerHTML = menuBreadth;
 		document.getElementById("menuType").innerHTML = menuType;
 		document.getElementById("menuDepth").innerHTML = menuDepth;
 		document.getElementById("targetItem").innerHTML = targetItem;
@@ -99,6 +175,7 @@ function nextTrial() {
 		tracker.newTrial();
 		tracker.trial = currentTrial;
 		tracker.menuType = menuType;
+		tracker.menuBreadth = menuBreadth;
 		tracker.menuDepth = menuDepth;
 		tracker.targetItem = targetItem;
 
@@ -107,12 +184,18 @@ function nextTrial() {
 			initializeMarkingMenu();
 			
 			if(menuDepth == 1){
-				menu = MarkingMenu(markingMenuL1, document.getElementById('marking-menu-container'));
+				if (menuBreadth == 2) menu = MarkingMenu(markingMenuL1B2, document.getElementById('marking-menu-container'));
+				else if (menuBreadth == 4) menu = MarkingMenu(markingMenuL1B4, document.getElementById('marking-menu-container'));
+				else if (menuBreadth == 6) menu = MarkingMenu(markingMenuL1B6, document.getElementById('marking-menu-container'));
 			}
 			else if(menuDepth == 2){
-				menu = MarkingMenu(markingMenuL2, document.getElementById('marking-menu-container'));
+				if (menuBreadth == 2) menu = MarkingMenu(markingMenuL2B2, document.getElementById('marking-menu-container'));
+				else if (menuBreadth == 4) menu = MarkingMenu(markingMenuL2B4, document.getElementById('marking-menu-container'));
+				else if (menuBreadth == 6) menu = MarkingMenu(markingMenuL2B6, document.getElementById('marking-menu-container'));
 			}else if(menuDepth == 3){
-				menu = MarkingMenu(markingMenuL3, document.getElementById('marking-menu-container'));
+				if (menuBreadth == 2) menu = MarkingMenu(markingMenuL3B2, document.getElementById('marking-menu-container'));
+				else if (menuBreadth == 4) menu = MarkingMenu(markingMenuL3B4, document.getElementById('marking-menu-container'));
+				else if (menuBreadth == 6) menu = MarkingMenu(markingMenuL3B6, document.getElementById('marking-menu-container'));
 			}
 
 			markingMenuSubscription = menu.subscribe((selection) => markingMenuOnSelect(selection));
@@ -121,23 +204,37 @@ function nextTrial() {
 
 			initializeRadialMenu();			
 			if (menuDepth == 1){
-				menu = createRadialMenu(radialMenuL1);
+				if (menuBreadth == 2) menu = createRadialMenu(radialMenuL1B2);
+				else if (menuBreadth == 4) menu = createRadialMenu(radialMenuL1B4);
+				else if (menuBreadth == 6) menu = createRadialMenu(radialMenuL1B6);
 			}
 			else if(menuDepth == 2){
-				menu = createRadialMenu(radialMenuL2);
+				if (menuBreadth == 2) menu = createRadialMenu(radialMenuL2B2);
+				else if (menuBreadth == 4) menu = createRadialMenu(radialMenuL2B4);
+				else if (menuBreadth == 6) menu = createRadialMenu(radialMenuL2B6);
 			}else if(menuDepth == 3){
-				menu = createRadialMenu(radialMenuL3);
+				if (menuBreadth == 2) menu = createRadialMenu(radialMenuL3B2);
+				else if (menuBreadth == 4) menu = createRadialMenu(radialMenuL3B4);
+				else if (menuBreadth == 6) menu = createRadialMenu(radialMenuL3B6);
 			}
-
-
 		}
 
 		currentTrial++;
 	} else {
+		if (round < 3) {
+			currentTrial = 1;
+			round++;
+			initExperiment(tracker.id)
+		} else {
+			var nextButton = document.getElementById("nextButton");
+			nextButton.innerHTML = "Done";
+
+			$('.instructions').hide();
+			$('#interaction-container').hide(300, function() {
+				$('.post-survey').show(300);
+			})
+		}
 		
-	    var nextButton = document.getElementById("nextButton");
-	    nextButton.innerHTML = "Done";
-		tracker.toCsv();
 	}
 }
 
@@ -211,6 +308,7 @@ function formatMarkingMenuData(data) {
 function markingMenuOnMouseDown(){
 
 	tracker.startTimer();
+	tracker.endReactionTime();
 }
 
 //Function to start tracking timer on mouse down
@@ -304,6 +402,7 @@ function toggleRadialMenu(e) {
 
 //Callback for radialmenu when a leaf node is selected
 function radialMenuOnSelect() {
+	tracker.endReactionTime();
 
 	tracker.recordSelectedItem(this.id);
 	var radialmenu = document.getElementById('radialmenu');
